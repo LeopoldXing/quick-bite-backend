@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:7.0.5-ubi8
+    container_name: quick-bite-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=lupin
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+    ports:
+      - "27017:27017"
+    volumes:
+      - quick-bite-data-dev:/data/db
+    networks:
+      - quick-bite-dev-network
+
+volumes:
+  quick-bite-data-dev:
+    name: quick-bite-data-dev
+
+networks:
+  quick-bite-dev-network:
+    driver: bridge
+    name: quick-bite-dev-network
