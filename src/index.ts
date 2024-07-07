@@ -1,6 +1,7 @@
 import express, {Request, Response} from "express";
 import cors from "cors";
 import * as mongoose from "mongoose";
+import myUserRoute from "./routes/MyUserRoute";
 
 // 1. get env
 require('dotenv').config();
@@ -16,8 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get("/test", async (request: Request, response: Response) => {
-  response.json({msg: "Hello!"})
-})
+app.use("/api/my/user", myUserRoute)
 
 app.listen(3005, () => console.log("Server is running on port 3005."));
