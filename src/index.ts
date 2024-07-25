@@ -17,6 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/my/user", myUserRoute)
+app.use("/api/my/user/", myUserRoute);
 
 app.listen(3005, () => console.log("Server is running on port 3005."));

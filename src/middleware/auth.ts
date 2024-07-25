@@ -17,7 +17,7 @@ require('dotenv').config();
 export const jwtCheck = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-  tokenSigningAlg: 'RS256'
+  tokenSigningAlg: "RS256"
 });
 
 export const jwtParse = async (req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +31,7 @@ export const jwtParse = async (req: Request, res: Response, next: NextFunction) 
   try {
     const decoded = jwt.decode(token) as jwt.JwtPayload;
     const auth0Id = decoded.sub;
-    const user = await User.findById({ auth0Id });
+    const user = await User.findOne({ auth0Id });
     if (!user) {
       return res.sendStatus(401);
     }
