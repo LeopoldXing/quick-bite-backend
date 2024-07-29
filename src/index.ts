@@ -24,5 +24,6 @@ app.get("/health", async (req: Request, res: Response) => {
 })
 
 app.use("/api/my/user/", myUserRoute);
+app.use("/api/my/restaurant", myUserRoute);
 
 app.listen(3005, () => console.log("Server is running on port 3005."));
