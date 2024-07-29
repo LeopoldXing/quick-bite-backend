@@ -1,4 +1,5 @@
 import express from "express";
+import { Request, Response } from 'express';
 import cors from "cors";
 import * as mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoute";
@@ -16,6 +17,11 @@ mongoose.connect(connectionString as string).then(() => console.log("Connected t
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// health check
+app.get("/health", async (req: Request, res: Response) => {
+  res.send({ message: 'ok' });
+})
 
 app.use("/api/my/user/", myUserRoute);
 
