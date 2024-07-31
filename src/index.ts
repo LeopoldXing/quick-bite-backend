@@ -1,8 +1,8 @@
-import express from "express";
-import { Request, Response } from 'express';
+import express, { Request, Response } from "express";
 import cors from "cors";
 import * as mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoute";
+import myRestaurantRoute from "./routes/MyRestaurantRoute";
 
 // 1. get env
 require('dotenv').config();
@@ -24,6 +24,6 @@ app.get("/health", async (req: Request, res: Response) => {
 })
 
 app.use("/api/my/user/", myUserRoute);
-app.use("/api/my/restaurant", myUserRoute);
+app.use("/api/my/restaurant", myRestaurantRoute);
 
 app.listen(3005, () => console.log("Server is running on port 3005."));

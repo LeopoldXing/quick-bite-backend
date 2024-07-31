@@ -12,12 +12,20 @@ const createMyRestaurant = async (req: Request, res: Response) => {
       await newRestaurant.save();
 
       res.status(201).send(newRestaurant);
+      return;
     } else {
-      return res.status(409).json({ message: `Restaurant already exists` });
+      res.status(409).json({ message: `Restaurant already exists` });
+      return;
     }
   } catch (e) {
-    res.status(500).json({ message: "Something went wrong" });
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Something went wrong" });
+    } else {
+      console.error("Attempt to send response on a completed request", e);
+    }
+    return;
   }
+
 }
 
 export default { createMyRestaurant };

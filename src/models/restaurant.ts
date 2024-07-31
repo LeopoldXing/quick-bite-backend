@@ -14,7 +14,7 @@ const restaurantSchema = new mongoose.Schema({
   estimatedDeliveryTime: { type: Number, required: true },
   cuisines: [{ type: String, required: true }],
   menuItems: [{ menuItemSchema }],
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   lastUpdated: { type: Date, required: true }
 });
 
