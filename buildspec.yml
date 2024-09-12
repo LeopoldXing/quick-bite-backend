@@ -7,6 +7,11 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
+  pre_build:
+    commands:
+      - echo Zipping application files...
+      - zip -r application.zip . -x "*.git*" "node_modules/*" "test/*"
+      - aws s3 cp application.zip s3://quick-bite/beanstalk/backend/application.zip
   build:
     commands:
       - echo Build started on `date`
@@ -16,6 +21,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Deploying application...
+      - aws elasticbeanstalk create-application-version --application-name quick-bite-backend --version-label $CODEBUILD_RESOLVED_SOURCE_VERSION --source-bundle S3Bucket=quick-bite,S3Key=beanstalk/backend/application.zip
       - aws elasticbeanstalk update-environment --application-name quick-bite-backend --environment-name quick-bite-backend-prod-env --version-label $CODEBUILD_RESOLVED_SOURCE_VERSION
 
 artifacts:
