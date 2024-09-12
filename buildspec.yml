@@ -11,7 +11,7 @@ phases:
     commands:
       - echo Zipping application files...
       - zip -r application.zip . -x "*.git*" "node_modules/*" "test/*"
-      - aws s3 cp application.zip s3://quick-bite/beanstalk/backend/application.zip
+      - aws s3 cp application.zip s3://quick-bite/deployment/backend/application.zip
   build:
     commands:
       - echo Build started on `date`
@@ -22,7 +22,7 @@ phases:
       - VERSION_LABEL="$CODEBUILD_RESOLVED_SOURCE_VERSION-$(date +%Y%m%d%H%M%S)"
       - echo Build completed on `date`
       - echo Deploying application...
-      - aws elasticbeanstalk create-application-version --application-name quick-bite-backend --version-label $VERSION_LABEL --source-bundle S3Bucket=quick-bite,S3Key=beanstalk/backend/application.zip
+      - aws elasticbeanstalk create-application-version --application-name quick-bite-backend --version-label $VERSION_LABEL --source-bundle S3Bucket=quick-bite,S3Key=deployment/backend/application.zip
       - aws elasticbeanstalk update-environment --application-name quick-bite-backend --environment-name quick-bite-backend-prod-env --version-label $VERSION_LABEL
 
 artifacts:
