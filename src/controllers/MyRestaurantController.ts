@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Restaurant } from "../models/restaurant";
 import mongoose from "mongoose";
-import { uploadFile } from "../utils/S3BucketUtil";
 import {v4 as uuidv4} from "uuid";
 
 const createMyRestaurant = async (req: Request, res: Response) => {
@@ -15,16 +14,9 @@ const createMyRestaurant = async (req: Request, res: Response) => {
     const filename = `${uuidv4()}.${extension}`;
     const mimetype = req.file?.mimetype || "";
 
-    const url = await uploadFile({
-      buffer: imageBuffer,
-      filename: filename,
-      mimetype: mimetype,
-      onProgressUpdate: (progress: number) => {}
-    });
     const newRestaurant = new Restaurant(req.body);
     newRestaurant.user = new mongoose.Types.ObjectId(req.userId);
     newRestaurant.lastUpdated = new Date();
-    newRestaurant.imageUrl = url;
     await newRestaurant.save();
 
     res.status(201).send(newRestaurant);
