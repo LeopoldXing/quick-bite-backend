@@ -20,7 +20,7 @@ app.use(cors());
 
 // health check
 app.get("/", async (req: Request, res: Response) => {
-  res.send({ message: '200 ok' });
+  res.send({ message: '200 OK' });
 })
 
 app.use("/api/my/user/", myUserRoute);
