@@ -19,8 +19,8 @@ app.use(express.json());
 app.use(cors());
 
 // health check
-app.get("/health", async (req: Request, res: Response) => {
-  res.send({ message: 'ok' });
+app.get("/", async (req: Request, res: Response) => {
+  res.send({ message: '200 ok' });
 })
 
 app.use("/api/my/user/", myUserRoute);
