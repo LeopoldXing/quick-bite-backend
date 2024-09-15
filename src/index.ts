@@ -26,4 +26,4 @@ app.get("/", async (req: Request, res: Response) => {
 app.use("/api/my/user/", myUserRoute);
 app.use("/api/my/restaurant", myRestaurantRoute);
 
-app.listen(process.env.PORT || 80, () => console.log(`Server is running on port ${process.env.PORT || 80}.`));
+app.listen(process.env.BACKEND_PORT || 8080, () => console.log(`Server is running on port ${process.env.BACKEND_PORT || 8080}.`));
