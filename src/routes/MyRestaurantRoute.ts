@@ -2,6 +2,7 @@ import express from "express";
 import MyRestaurantController from "../controllers/MyRestaurantController";
 import { validateMyRestaurantRequest } from "../middleware/validation";
 import multer from "multer";
+import { jwtCheck, jwtParse } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -13,6 +14,6 @@ const upload = multer({
   },
 });
 
-router.post('/', upload.single("imageFile"), validateMyRestaurantRequest, MyRestaurantController.createMyRestaurant);
+router.post('/', jwtCheck, jwtParse, upload.single("imageFile"), validateMyRestaurantRequest, MyRestaurantController.createMyRestaurant);
 
 export default router;

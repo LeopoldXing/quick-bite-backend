@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Restaurant } from "../models/restaurant";
 import mongoose from "mongoose";
-import {v4 as uuidv4} from "uuid";
+import {v2 as cloudinary} from "cloudinary";
 
 const createMyRestaurant = async (req: Request, res: Response) => {
   try {
@@ -9,16 +9,21 @@ const createMyRestaurant = async (req: Request, res: Response) => {
     if (existingRestaurant) {
       return res.status(409).json({ message: `Restaurant already exists` });
     }
-    const imageBuffer = Buffer.from(req.file?.buffer || "");
-    const extension = req.file?.originalname.split('.').pop();
-    const filename = `${uuidv4()}.${extension}`;
-    const mimetype = req.file?.mimetype || "";
 
+    // upload image to cloudinary
+    const image = req.file as Express.Multer.File;
+    const base64Image = Buffer.from(image.buffer).toString("base64");
+    const dataURI = `data:${image.mimetype};base64,${base64Image}`;
+    const uploadResponse = await cloudinary.uploader.upload(dataURI);
+
+    // add new restaurant
     const newRestaurant = new Restaurant(req.body);
+    newRestaurant.imageUrl = uploadResponse.url;
     newRestaurant.user = new mongoose.Types.ObjectId(req.userId);
     newRestaurant.lastUpdated = new Date();
     await newRestaurant.save();
 
+    // return result
     res.status(201).send(newRestaurant);
     return;
   } catch (e) {
