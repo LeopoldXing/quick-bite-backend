@@ -4,6 +4,7 @@ import * as mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoute";
 import myRestaurantRoute from "./routes/MyRestaurantRoute";
 import {v2 as cloudinary} from "cloudinary";
+import RestaurantRoute from "./routes/RestaurantRoute";
 
 // 1. get env
 require('dotenv').config();
@@ -33,5 +34,6 @@ app.get("/", async (req: Request, res: Response) => {
 
 app.use("/api/my/user/", myUserRoute);
 app.use("/api/my/restaurant", myRestaurantRoute);
+app.use("/api/restaurant", RestaurantRoute);
 
 app.listen(process.env.BACKEND_PORT || 8080, () => console.log(`Server is running on port ${process.env.BACKEND_PORT || 8080}.`));
