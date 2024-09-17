@@ -15,11 +15,8 @@ const createMyRestaurant = async (req: Request, res: Response) => {
       return res.status(409).json({ message: `Restaurant already exists` });
     }
 
-    let url = '';
-    if(req.file) {
-      // upload image to cloudinary
-      url = await uploadImage2Cloudinary(req.file);
-    }
+    // upload image to cloudinary
+    let url = await uploadImage2Cloudinary(req.file as Express.Multer.File);
 
     // add new restaurant
     const newRestaurant = new Restaurant(req.body);

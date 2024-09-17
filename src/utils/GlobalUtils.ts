@@ -1,5 +1,5 @@
 import SparkMD5 from 'spark-md5';
-import { v2 as cloudinary } from "cloudinary";
+import { UploadApiResponse, v2 as cloudinary } from "cloudinary";
 
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,10 +33,17 @@ export const calculateSHA256 = async (blob: Blob): Promise<string> => {
  * @param file
  */
 export const uploadImage2Cloudinary = async (file: Express.Multer.File): Promise<string> => {
+  if (!file) return '';
+
   const image = file;
   const base64Image = Buffer.from(image.buffer).toString("base64");
   const dataURI = `data:${image.mimetype};base64,${base64Image}`;
 
-  const uploadResponse = await cloudinary.uploader.upload(dataURI);
-  return uploadResponse.url;
+  const uploadResponse: UploadApiResponse | void = await cloudinary.uploader
+      .upload(dataURI)
+      .catch((error) => {
+        console.log(error);
+      });
+
+  return uploadResponse?.url || '';
 };
