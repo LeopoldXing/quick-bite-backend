@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { Restaurant } from "../models/restaurant";
 import mongoose from "mongoose";
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
+/**
+ * Create new Restaurant
+ * @param req
+ * @param res
+ */
 const createMyRestaurant = async (req: Request, res: Response) => {
   try {
     const existingRestaurant = await Restaurant.findOne({ user: req.userId });
@@ -34,7 +39,15 @@ const createMyRestaurant = async (req: Request, res: Response) => {
     }
     return;
   }
+}
+
+/**
+ *
+ * @param req
+ * @param res
+ */
+const getMyRestaurant = async (req: Request, res: Response) => {
 
 }
 
-export default { createMyRestaurant };
+export default { createMyRestaurant, getMyRestaurant };

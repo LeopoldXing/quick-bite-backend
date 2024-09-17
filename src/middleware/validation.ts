@@ -26,7 +26,7 @@ export const validateMyRestaurantRequest = [
   body("estimatedDeliveryTime").isInt({ min: 0 }).withMessage("Estimated DeliveryTime must be a positive number"),
   body("cuisines").isArray().withMessage("Cuisines must be an array").not().isEmpty().withMessage("Cuisine can't be empty"),
   body("menuItems").isArray().withMessage("MenuItem must be an array"),
-  body("menuItem.*.name").notEmpty().withMessage("MenuItem name can't be empty"),
-  body("menuItem.*.price").isFloat({ min: 0 }).withMessage("MenuItem price must be a positive number"),
+  body("menuItems.*.name").notEmpty().withMessage("MenuItem name can't be empty"),
+  body("menuItems.*.price").isFloat({ min: 0 }).withMessage("MenuItem price must be a positive number"),
   handleValidationErrors
 ]
