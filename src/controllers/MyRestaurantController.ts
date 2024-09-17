@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Restaurant } from "../models/restaurant";
 import mongoose from "mongoose";
-import { v2 as cloudinary } from "cloudinary";
+import { uploadImage2Cloudinary } from "../utils/GlobalUtils";
 
 /**
  * Create new Restaurant
@@ -15,15 +15,15 @@ const createMyRestaurant = async (req: Request, res: Response) => {
       return res.status(409).json({ message: `Restaurant already exists` });
     }
 
-    // upload image to cloudinary
-    const image = req.file as Express.Multer.File;
-    const base64Image = Buffer.from(image.buffer).toString("base64");
-    const dataURI = `data:${image.mimetype};base64,${base64Image}`;
-    const uploadResponse = await cloudinary.uploader.upload(dataURI);
+    let url = '';
+    if(req.file) {
+      // upload image to cloudinary
+      url = await uploadImage2Cloudinary(req.file);
+    }
 
     // add new restaurant
     const newRestaurant = new Restaurant(req.body);
-    newRestaurant.imageUrl = uploadResponse.url;
+    newRestaurant.imageUrl = url;
     newRestaurant.user = new mongoose.Types.ObjectId(req.userId);
     newRestaurant.lastUpdated = new Date();
     await newRestaurant.save();
