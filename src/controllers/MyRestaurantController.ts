@@ -10,7 +10,7 @@ import { uploadImage2Cloudinary } from "../utils/GlobalUtils";
  */
 const getMyRestaurant = async (req: Request, res: Response) => {
   try {
-    const restaurant = Restaurant.findOne({user: req.userId});
+    const restaurant = await Restaurant.findOne({user: req.userId});
     if(!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
