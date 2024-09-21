@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { Request, Response } from "express";
 import { Restaurant, MenuItemType } from "../models/restaurant";
+import Order from "../models/order";
 
 /*  init stripe  */
 const STRIPE = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -21,6 +22,10 @@ type CheckoutSessionRequest = {
   restaurantId: string;
 };
 
+const stripeWebhookHandler = async (request: Request, res: Response) => {
+    console.log(request);
+}
+
 /**
  * handle create checkout session and create order
  * @param request
@@ -37,16 +42,28 @@ const createCheckoutSession = async (request: Request, response: Response) => {
       throw new Error("Fail to create checkout session, restaurant not found");
     }
 
-    // 3. create item list displayed during the checkout in stripe page
+    // 3. create the order
+    const order = new Order({
+      restaurant: restaurant,
+      user: request.userId,
+      status: 'placed',
+      deliveryDetails: checkoutInfo.deliveryDetails,
+      cartItems: checkoutInfo.cartItems
+    })
+
+    // 4. create item list displayed during the checkout in stripe page
     const itemList = createItemList(checkoutInfo, restaurant.menuItems);
 
-    // 4. create checkout session
+    // 5. create checkout session
     const session = await createSession(itemList, 'test', restaurant.deliveryPrice, restaurant._id.toString());
     if (!session.url) {
       return response.status(500).json({ message: "Error creating stripe session" });
     }
 
-    // 5. return session url
+    // 6. save the order to database
+    await order.save();
+
+    // 7. return session url
     response.json({ sessionUrl: session.url });
   } catch (e) {
     console.error(e);
@@ -114,4 +131,4 @@ const createSession = async (lineItems: Stripe.Checkout.SessionCreateParams.Line
   });
 }
 
-export default { createCheckoutSession };
+export default { createCheckoutSession, stripeWebhookHandler };
