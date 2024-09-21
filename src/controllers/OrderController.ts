@@ -5,7 +5,8 @@ import Order from "../models/order";
 
 /*  init stripe  */
 const STRIPE = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL as string;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET as string;
 
 type CheckoutSessionRequest = {
   cartItems: {
@@ -22,8 +23,38 @@ type CheckoutSessionRequest = {
   restaurantId: string;
 };
 
-const stripeWebhookHandler = async (request: Request, res: Response) => {
-    console.log(request);
+/**
+ * use Stripe webhook to update order status
+ * @param request
+ * @param response
+ */
+const stripeWebhookHandler = async (request: Request, response: Response) => {
+  let event;
+
+  try {
+    const sig = request.headers['stripe-signature'];
+    event = STRIPE.webhooks.constructEvent(request.body, sig as string, STRIPE_WEBHOOK_SECRET);
+  } catch (error) {
+    console.log(error);
+    // @ts-ignore
+    return response.status(400).send({ message: `Webhook error: ${error.message}` });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    console.log("event---------------------")
+    console.log(event)
+    const order = await Order.findById(event.data.object.metadata?.orderId);
+    console.log("order---------------------")
+    console.log(order)
+    if (!order) {
+      return response.status(404).json({ message: "Order status update failed, order not found" });
+    }
+    order.totalAmount = event.data.object.amount_total;
+    order.status = 'paid';
+    await order.save();
+  }
+
+  return response.status(200).send();
 }
 
 /**
@@ -55,7 +86,7 @@ const createCheckoutSession = async (request: Request, response: Response) => {
     const itemList = createItemList(checkoutInfo, restaurant.menuItems);
 
     // 5. create checkout session
-    const session = await createSession(itemList, 'test', restaurant.deliveryPrice, restaurant._id.toString());
+    const session = await createSession(itemList, order._id.toString(), restaurant.deliveryPrice, restaurant._id.toString());
     if (!session.url) {
       return response.status(500).json({ message: "Error creating stripe session" });
     }
