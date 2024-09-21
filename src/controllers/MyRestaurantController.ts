@@ -122,4 +122,41 @@ const updateMyRestaurant = async (req: Request, res: Response) => {
   }
 }
 
-export default { createMyRestaurant, getMyRestaurant, updateMyRestaurant, getMyRestaurantOrders };
+/**
+ * update order status
+ * @param request
+ * @param response
+ */
+const updateOrderStatus = async (request: Request, response: Response) => {
+  try {
+    // 1. get the orderId and current status
+    const { orderId } = request.params;
+    const { status } = request.body;
+
+    // 2. get the order
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return response.status(404).json({ message: `Failed to update order status, order ${orderId} not found` });
+    }
+
+    // 3. get the restaurant
+    const restaurant = await Restaurant.findById(order.restaurant).populate("user");
+    if (!restaurant) {
+      return response.status(404).json({ message: `Failed to update order status, Restaurant ${order.restaurant} not found` });
+    }
+    if (restaurant.user?._id.toString() !== request.userId) {
+      return response.status(401).json({ message: "User does not have the authorization to perform this action" });
+    }
+
+    // 4. update the order status
+    order.status = status;
+    await order.save();
+
+    response.status(200).json(order);
+  } catch (error) {
+    console.log(error);
+    response.status(500).json({ message: "Fail to update order status" });
+  }
+}
+
+export default { createMyRestaurant, getMyRestaurant, updateMyRestaurant, getMyRestaurantOrders, updateOrderStatus };
