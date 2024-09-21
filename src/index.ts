@@ -1,10 +1,11 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import * as mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoute";
 import myRestaurantRoute from "./routes/MyRestaurantRoute";
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import RestaurantRoute from "./routes/RestaurantRoute";
+import OrderRoute from "./routes/OrderRoute";
 
 // 1. get env
 require('dotenv').config();
@@ -29,11 +30,12 @@ app.use(cors());
 
 // health check
 app.get("/", async (req: Request, res: Response) => {
-  res.send({message: '200 OK'});
+  res.send({ message: '200 OK' });
 })
 
 app.use("/api/my/user/", myUserRoute);
 app.use("/api/my/restaurant", myRestaurantRoute);
 app.use("/api/restaurant", RestaurantRoute);
+app.use("/api/order", OrderRoute);
 
 app.listen(process.env.BACKEND_PORT || 8080, () => console.log(`Server is running on port ${process.env.BACKEND_PORT || 8080}.`));
