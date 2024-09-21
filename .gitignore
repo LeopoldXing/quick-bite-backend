@@ -25,5 +25,3 @@ dist-ssr
 *.sw?
 
 deploy
-stripe.exe
-stripe.sh

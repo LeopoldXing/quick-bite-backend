@@ -24,6 +24,23 @@ type CheckoutSessionRequest = {
 };
 
 /**
+ * get current user's order list
+ * @param request
+ * @param response
+ */
+const getMyOrders = async (request: Request, response: Response) => {
+  try {
+    const orderList = await Order.find({ user: request.userId }).populate('restaurant').populate('user');
+
+    response.json(orderList);
+  } catch (error) {
+    console.log(error);
+    // @ts-ignore
+    response.status(500).json({ message: `Failed to fetch my orders: ${error.message}` });
+  }
+}
+
+/**
  * use Stripe webhook to update order status
  * @param request
  * @param response
@@ -41,11 +58,7 @@ const stripeWebhookHandler = async (request: Request, response: Response) => {
   }
 
   if (event.type === 'checkout.session.completed') {
-    console.log("event---------------------")
-    console.log(event)
     const order = await Order.findById(event.data.object.metadata?.orderId);
-    console.log("order---------------------")
-    console.log(order)
     if (!order) {
       return response.status(404).json({ message: "Order status update failed, order not found" });
     }
@@ -162,4 +175,4 @@ const createSession = async (lineItems: Stripe.Checkout.SessionCreateParams.Line
   });
 }
 
-export default { createCheckoutSession, stripeWebhookHandler };
+export default { createCheckoutSession, stripeWebhookHandler, getMyOrders };
