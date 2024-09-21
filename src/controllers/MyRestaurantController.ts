@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Restaurant } from "../models/restaurant";
 import mongoose from "mongoose";
 import { uploadImage2Cloudinary } from "../utils/GlobalUtils";
+import Order from "../models/order";
 
 /**
  *
@@ -18,6 +19,31 @@ const getMyRestaurant = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Error fetching restaurant' })
+  }
+}
+
+/**
+ * query my restaurant's order list
+ * @param request
+ * @param response
+ */
+const getMyRestaurantOrders = async (request: Request, response: Response) => {
+  try {
+    // 1. get restaurant
+    const restaurant = await Restaurant.findOne({ user: request.userId });
+    if (!restaurant) {
+      return response.status(404).json({ message: "Restaurant not found" });
+    }
+
+    // 2. get orders
+    const orders = await Order.find({ restaurant: restaurant._id }).populate("user").populate('restaurant');
+
+    // 3. return result
+    response.json(orders || []);
+  } catch (error) {
+    console.log(error);
+    // @ts-ignore
+    response.status(500).json({ message: `Failed to fetch restaurant orders: ${error.message}` });
   }
 }
 
@@ -96,4 +122,4 @@ const updateMyRestaurant = async (req: Request, res: Response) => {
   }
 }
 
-export default { createMyRestaurant, getMyRestaurant, updateMyRestaurant };
+export default { createMyRestaurant, getMyRestaurant, updateMyRestaurant, getMyRestaurantOrders };
