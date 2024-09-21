@@ -1,10 +1,10 @@
 import Stripe from "stripe";
 import { Request, Response } from "express";
-import { menuItemType, Restaurant } from "../models/restaurant";
+import { Restaurant, MenuItemType } from "../models/restaurant";
 
 /*  init stripe  */
 const STRIPE = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-const FRONTEND_URL = process.env.FRONT_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 type CheckoutSessionRequest = {
   cartItems: {
@@ -59,7 +59,7 @@ const createCheckoutSession = async (request: Request, response: Response) => {
  * @param checkoutInfo
  * @param menuItems
  */
-const createItemList = (checkoutInfo: CheckoutSessionRequest, menuItems: menuItemType[]) => {
+const createItemList = (checkoutInfo: CheckoutSessionRequest, menuItems: MenuItemType[]) => {
   return checkoutInfo.cartItems.map(cartItem => {
     // 1. get the menu item info
     const menuItem = menuItems.find(item => item._id.toString() === cartItem.menuItemId);
