@@ -1,20 +1,7 @@
-# Fetching the minified node image on apline linux
-FROM node:slim
-
-# Declaring env
-ENV NODE_ENV development
-
-# Setting up the work directory
-WORKDIR /quickbite
-
-# Copying all the files in our project
+FROM node:18.16.0-alpine3.17
+RUN mkdir -p /opt/app
+WORKDIR /opt/app
 COPY . .
-
-# Installing dependencies
-RUN npm install
-
-# Starting our application
-CMD [ "node", "index.js" ]
-
-# Exposing server port
-EXPOSE 5000
+RUN npm install && npm run build
+EXPOSE 8080
+CMD [ "npm", "run", "start"]
